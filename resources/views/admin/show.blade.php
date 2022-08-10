@@ -12,7 +12,6 @@
                     <li class="list-group-item bg-transparent">@lang('lang.texte_adresse') : {{ $etudiant->adresse }}</li>
                     <li class="list-group-item bg-transparent">@lang('lang.texte_ville') : {{ $etudiant->ville_nom }}</li>
                 </ul>
-                <a href="{{ route('etudiant.edit', $etudiant->id) }}" class="btn btn-primary m-2">@lang('lang.texte_btn_modifier')</a>
                 <form method="post">
                     @csrf
                     @method('DELETE')

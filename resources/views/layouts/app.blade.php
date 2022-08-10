@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
@@ -32,6 +32,7 @@
 </head>
 
 <body>
+    @php $locale = session()->get('locale'); @endphp
     <div class="container-xxl position-relative bg-white d-flex p-0">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -45,22 +46,34 @@
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-light navbar-light">
-                <a href="{{ route('etudiant') }}" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>2195617</h3>
+                <a href="{{ route('tableaudebord') }}" class="navbar-brand mx-4 mb-3">
+                    <h3 class="text-primary">M2195617</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
+                    @auth
                     <div class="position-relative">
                         <img class="rounded-circle" src="{{ asset('img/user.jpg') }}" alt="" style="width: 40px; height: 40px;">
                         <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0">Jhon Doe</h6>
-                        <span>Admin</span>
+                        <h6 class="mb-0">{{ $name }}</h6>
                     </div>
+                    @endauth
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="{{ route('etudiant') }}" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Étudiants</a>
-                    <a href="{{ route('etudiant.create') }}" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Ajouter</a>
+                    @guest
+                    <a href="{{ route('connexion') }}" class="nav-item nav-link">@lang('lang.texte_connexion_titre')</a>
+                    <a href="{{ route('inscription') }}" class="nav-item nav-link">@lang('lang.texte_inscription_titre')</a>
+                    @else 
+                    <!-- ADMIN -->
+                    <!-- <a href="{{ route('etudiant') }}" class="nav-item nav-link"><i class="fa fa-table me-2"></i>@lang('lang.texte_nav_etudiant')</a>
+                    <a href="{{ route('etudiant.create') }}" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>@lang('lang.texte_nav_ajouter_etudiant')</a> -->
+                    <!-- ÉTUDIANT -->
+                    <a href="{{ route('forum.articles') }}" class="nav-link"><i class="far fa-file-alt me-2"></i>@lang('lang.texte_nav_forum')</a>
+                    <a href="{{ route('forum.create') }}" class="nav-link"><i class="fa fa-keyboard me-2"></i>@lang('lang.texte_nav_ajouter_article')</a>
+                    <a href="{{ route('document.fichiers') }}" class="nav-link"><i class="far fa-file-alt me-2"></i>@lang('lang.texte_nav_doc')</a>
+                    <a href="{{ route('document.create') }}" class="nav-link"><i class="fa fa-keyboard me-2"></i>@lang('lang.texte_nav_ajouter_doc')</a>
+                    @endguest
                 </div>
             </nav>
         </div>
@@ -71,90 +84,24 @@
         <div class="content">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
-                <a href="{{ route('etudiant') }}" class="navbar-brand d-flex d-lg-none me-4">
-                    <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
-                </a>
                 <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
-                <form class="d-none d-md-flex ms-4">
-                    <input class="form-control border-0" type="search" placeholder="Search">
-                </form>
                 <div class="navbar-nav align-items-center ms-auto">
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-envelope me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Message</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="{{ asset('img/user.jpg') }}" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="{{ asset('img/user.jpg') }}" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="{{ asset('img/user.jpg') }}" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item text-center">See all message</a>
-                        </div>
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-bell me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Notificatin</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">Profile updated</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">New user added</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">Password changed</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item text-center">See all notifications</a>
-                        </div>
-                    </div>
+                    @auth
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img class="rounded-circle me-lg-2" src="{{ asset('img/user.jpg') }}" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">John Doe</span>
+                            <span class="d-none d-lg-inline-flex">{{ $name }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">My Profile</a>
-                            <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
+                            <a href="{{ route('etudiant.show', $etudiant->id) }}" class="dropdown-item">@lang('lang.texte_nav_profil')</a>
+                            <a href="{{ route('deconnexion') }}" class="dropdown-item">@lang('lang.texte_nav_deconnecter')</a>
                         </div>
                     </div>
+                    @endauth
+                    <a class="nav-link @if($locale=='fr') text-primary @endif" href="{{ route('lang', 'fr') }}">Fr</a>
+                    <a class="nav-link @if($locale=='en') text-primary @endif" href="{{ route('lang', 'en') }}">En</a>
                 </div>
             </nav>
             <!-- Navbar End -->
@@ -164,11 +111,11 @@
                 <div class="bg-light rounded-top p-4">
                     <div class="row">
                         <div class="col-12 col-sm-6 text-center text-sm-start">
-                            &copy; <a href="#">Marie-Pierre St-Louis</a>, All Right Reserved. 
+                            &copy; <a href="#">Marie-Pierre St-Louis</a>, @lang('lang.texte_droits'). 
                         </div>
                         <div class="col-12 col-sm-6 text-center text-sm-end">
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            Designed By <a href="https://htmlcodex.com">HTML Codex</a>
+                            @lang('lang.texte_design') <a href="https://htmlcodex.com">HTML Codex</a>
                         </div>
                     </div>
                 </div>

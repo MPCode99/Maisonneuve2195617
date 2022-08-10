@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Ville;
 use App\Models\Etudiant;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
-class EtudiantController extends Controller
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,13 +15,8 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        if(Auth::check()) {$name = Auth::user()->name;}
-        if(Auth::check()) {$id = Auth::user()->id;}
-        $etudiant = Etudiant::select('etudiants.id')
-                    ->join('users', 'etudiants.user_id', '=', 'users.id')
-                    ->WHERE('users.id', $id)->get();
-        $etudiant = $etudiant[0];
-        return view('etudiant.index', ['name' => $name, 'id' => $id, 'etudiant' => $etudiant]);
+        $etudiants = Etudiant::select('etudiants.id', 'etudiants.name', 'etudiants.phone', 'etudiants.date_naissance')->get();
+        return view('admin.liste', ['etudiants' => $etudiants]);
     }
 
     /**
@@ -34,16 +26,14 @@ class EtudiantController extends Controller
      */
     public function create()
     {
-        if(Auth::check()){$name = Auth::user()->name;}
         $villes = Ville::all();
-        return view('etudiant.create', ['villes' => $villes, 'name' => $name]);
+        return view('admin.create', ['villes' => $villes]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Http\Etudiant  $etudiant
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Etudiant $etudiant)
@@ -65,27 +55,22 @@ class EtudiantController extends Controller
             'ville_id' => $request->ville_id
         ]);
 
-        return redirect(route('etudiant.show', $etudiant->id));
+        return redirect(route('admin.show', $etudiant->id));
     }
 
     /**
      * Display the specified resource.
-     * 
+     *
      * @param  \App\Models\Etudiant  $etudiant
      * @return \Illuminate\Http\Response
      */
     public function show(Etudiant $etudiant)
     {
-        if(Auth::check()) {$id = Auth::user()->id;}
         $etudiant = Etudiant::select('etudiants.*', 'villes.nom as ville_nom')
                     ->join('villes', 'etudiants.ville_id', '=', 'villes.id')
-                    ->join('users', 'etudiants.user_id', '=', 'users.id')
-                    ->WHERE('users.id', $id)
+                    ->WHERE('etudiants.id', $etudiant->id)
                     ->get(); 
-        $email = "";
-        if(Auth::check()){$name = Auth::user()->name;}
-        if(Auth::check()) {$email = Auth::user()->email;}
-        return view('etudiant.show', ['etudiant' => $etudiant[0], 'name' => $name, 'email' => $email, 'id' => $id]);
+        return view('admin.show', ['etudiant' => $etudiant[0]]);
     }
 
     /**
@@ -96,10 +81,8 @@ class EtudiantController extends Controller
      */
     public function edit(Etudiant $etudiant)
     {
-        if(Auth::check()){$name = Auth::user()->name;}
-        if(Auth::check()) {$id = Auth::user()->id;}
         $villes = Ville::all();
-        return view('etudiant.edit', ['etudiant' => $etudiant, 'villes' => $villes, 'name' => $name, 'id' => $id]);
+        return view('admin.edit', ['etudiant' => $etudiant, 'villes' => $villes]);
     }
 
     /**
@@ -117,12 +100,7 @@ class EtudiantController extends Controller
             'email' => 'required|email|unique:etudiants,email,'.$etudiant->id,
             'date_naissance' => 'required|date_format:Y-m-d',
             'adresse' => 'required|min:4|max:100',
-            'ville_id' => 'required|min:1|max:3',
-        ]);
-        $user_id = $etudiant->user_id;
-        User::where('id', $user_id)->update([
-            'name' => $request['name'],
-            'email' => $request['email']
+            'ville_id' => 'required|min:1|max:3'
         ]);
         $etudiant->update([
             'name' => $request->name,
@@ -132,7 +110,7 @@ class EtudiantController extends Controller
             'adresse' => $request->adresse,
             'ville_id' => $request->ville_id
         ]);
-        return redirect(route('etudiant.edit', $etudiant->id));
+        return redirect(route('admin.edit', $etudiant->id));
     }
 
     /**
@@ -143,11 +121,7 @@ class EtudiantController extends Controller
      */
     public function destroy(Etudiant $etudiant)
     {
-        $user_id = $etudiant->user_id;
         $etudiant->delete();
-        User::where('id', $user_id)->delete();
-        Session::flush();
-        Auth::logout();
-        return redirect(route('connexion'));
+        return redirect(route('admin'));
     }
 }
